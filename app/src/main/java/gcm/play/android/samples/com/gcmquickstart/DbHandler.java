@@ -68,7 +68,19 @@ public class DbHandler {
             e.printStackTrace();
             Log.d(TAG,"Error retrieving data "+e.toString());
         }
-
+        close();
         return null;
+    }
+
+    public void deleteTable(){
+        //delete and recreate table on user refresh
+        try {
+            open();
+            liteDatabase.execSQL("delete from "+DbHelper.DB_TABLE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            Log.d(TAG, "Error deleting data " + e.toString());
+        }
+        close();
     }
 }

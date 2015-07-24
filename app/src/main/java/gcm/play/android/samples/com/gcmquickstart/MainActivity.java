@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         SharedPreferences msharedPreferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
         String registered = msharedPreferences.getString(Configs.userPref,Configs.login_false);
@@ -86,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(getApplicationContext(),"Registered",Toast.LENGTH_SHORT).show();
                 Intent nnew = new Intent(getApplicationContext(),Contacts_Activity.class);
+                finish();
                 startActivity(nnew);
             }
         }

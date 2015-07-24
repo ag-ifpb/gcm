@@ -16,6 +16,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 //import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -79,7 +80,7 @@ public class Chat_Activity extends ActionBarActivity {
         });
     }
 
-    private String sendMessage(String to, String message){
+    private String sendMessage(final String to, String message){
         final String too = to;
         final String sender = "~0703435435~";
         final String msg = sender.concat(message);
@@ -93,10 +94,12 @@ public class Chat_Activity extends ActionBarActivity {
                     JSONObject jData = new JSONObject();
                     jData.put("message", msg);
                     // Where to send GCM message.
-                    if (too.length() > 1 && too != null) {
-                        jGcmData.put("to", too);
+                    if (to.length() > 1) {
+                        jGcmData.put("to", to);
+                        Log.d(DEBUG_TAG, "recipient not null ");
                     } else {
                         jGcmData.put("to", "/topics/global");
+                        Log.d(DEBUG_TAG, "recipient null ");
                     }
                     // What to send in GCM message.
                     jGcmData.put("data", jData);
@@ -111,23 +114,26 @@ public class Chat_Activity extends ActionBarActivity {
 
                     // Send GCM message content.
                     OutputStream outputStream = conn.getOutputStream();
+                    Log.d(DEBUG_TAG,"output stream "+outputStream);
                     outputStream.write(jGcmData.toString().getBytes());
 
                     // Read GCM response.
                     InputStream inputStream = conn.getInputStream();
-//            String resp = IOUtils.toString(inputStream);
-                    String resp = inputStream.toString();
+                    String resp = IOUtils.toString(inputStream);
+//                    String resp = inputStream.toString();
                     System.out.println(resp);
                     Log.d(DEBUG_TAG,"GCM Response "+resp);
                     System.out.println("Check your device/emulator for notification or logcat for " +
                             "confirmation of the receipt of the GCM message.");
                 } catch (IOException e) {
+                    Log.d(DEBUG_TAG,"Unable to send GCM message.");
                     System.out.println("Unable to send GCM message.");
                     System.out.println("Please ensure that API_KEY has been replaced by the server " +
                             "API key, and that the device's registration token is correct (if specified).");
                     e.printStackTrace();
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    Log.d(DEBUG_TAG,"JSON Error "+e.toString());
                 }
                 return null;
             }
