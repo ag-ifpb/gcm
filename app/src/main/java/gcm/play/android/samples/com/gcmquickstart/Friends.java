@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -54,6 +55,8 @@ public class Friends extends Fragment {
 
         }else{
             Log.d(TAG,"contacts returned "+contacts.getCount());
+            String ddate = new Date().toString();
+            Log.d(TAG,ddate);
             //define adapter
 //            ContactsCursorAdapter contactsAdapter = new ContactsCursorAdapter(getActivity(),contacts);
 //            lvContacts.setAdapter(contactsAdapter);

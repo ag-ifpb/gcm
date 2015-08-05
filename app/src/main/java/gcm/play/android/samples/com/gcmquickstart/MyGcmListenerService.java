@@ -28,6 +28,8 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
+import java.util.Date;
+
 public class MyGcmListenerService extends GcmListenerService {
 
     private static final String TAG = "MyGcmListenerService";
@@ -52,13 +54,23 @@ public class MyGcmListenerService extends GcmListenerService {
          *     - Store message in local database.
          *     - Update UI.
          */
+        //save in db
+        DbHandler dbHandler = new DbHandler(getApplicationContext());
+        String[] sunText = message.split("~");
+        Messages messages = new Messages(sunText[1]);
+        messages.setMessageFrom(sunText[0]);
+        Utils utils = new Utils(getApplicationContext());
+        messages.setMessageTo(utils.getPref(Configs.userPref));
+        messages.setMessageTime(new Date().toString());
+        dbHandler.saveMessage(messages);
+
         updateUI(message,from);
 
         /**
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
          */
-        sendNotification(message);
+        sendNotification(message,sunText[0]);
     }
     // [END receive_message]
 
@@ -67,9 +79,10 @@ public class MyGcmListenerService extends GcmListenerService {
      *
      * @param message GCM message received.
      */
-    private void sendNotification(String message) {
-        Intent intent = new Intent(this, MainActivity.class);
+    private void sendNotification(String message,String sender) {
+        Intent intent = new Intent(this, Chat_Activity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra(Configs.phone, sender);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 

@@ -18,7 +18,7 @@ public class Utils {
 
     public String getPref(String prefName){
         mSharePreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-        return mSharePreferences.getString(Configs.userPref,"none");
+        return mSharePreferences.getString(prefName,"none");
     }
 
 }

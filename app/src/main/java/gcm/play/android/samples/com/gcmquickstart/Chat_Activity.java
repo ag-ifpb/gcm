@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -26,6 +28,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by dk on 7/10/2015.
@@ -38,8 +41,13 @@ public class Chat_Activity extends ActionBarActivity {
     Button chatSend;
     Listview_Adapter listview_adapter;
     Messages messages;
+    Utils utils;
     String DEBUG_TAG = this.getClass().getSimpleName();
     IntentFilter filter;
+    DbHandler dbHandler;
+
+    String regId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,17 +57,54 @@ public class Chat_Activity extends ActionBarActivity {
 //        actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        utils = new Utils(getApplicationContext());
+        dbHandler = new DbHandler(getApplicationContext());
+
         //get passed data from intent
         Intent myIntent = getIntent();
-        String phone = myIntent.getStringExtra(Configs.phone);
-        final String regId = myIntent.getStringExtra(Configs.regId);
+        final String phone = myIntent.getStringExtra(Configs.phone);
+        regId = myIntent.getStringExtra(Configs.regId);
+        try {
+            if(regId.isEmpty() || regId.length()==0){
+                //fetch regId corresponding to phone
+                Cursor mregId = dbHandler.getRegId(phone);
+                Log.d(DEBUG_TAG,"reg Id "+mregId.getCount());
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+            Log.d(DEBUG_TAG, "regId is null");
+            Cursor mregId = dbHandler.getRegId(phone);
+            Log.d(DEBUG_TAG, "reg Id " + mregId.getCount());
+            for (mregId.moveToFirst();!mregId.isAfterLast();mregId.moveToNext()){
+
+               regId = mregId.getString(mregId.getColumnIndex("regId"));
+            }
+        }
         actionBar.setTitle(phone);
 
         chatList = (ListView) findViewById(R.id.chatList);
         chatText = (EditText) findViewById(R.id.chatText);
         chatSend = (Button) findViewById(R.id.chatSend);
         listview_adapter= new Listview_Adapter(getApplicationContext(),R.layout.chat_item);
+        chatList.setStackFromBottom(true);
         chatList.setAdapter(listview_adapter);
+
+        Cursor msgs = dbHandler.getMessages(phone);
+        Log.d(DEBUG_TAG, "messages returned " + msgs.getCount());
+        if(msgs.getCount()!=0){
+            //show messages in listview
+            ArrayList<Messages> results = new ArrayList<>();
+            for (msgs.moveToFirst();!msgs.isAfterLast();msgs.moveToNext()){
+
+                Messages msgObject = new Messages(msgs.getString(msgs.getColumnIndex("messageText")));
+                msgObject.setMessageTo(msgs.getString(msgs.getColumnIndex("messageTo")));
+                msgObject.setMessageFrom(msgs.getString(msgs.getColumnIndex("messageFrom")));
+                msgObject.setMessageTime(msgs.getString(msgs.getColumnIndex("messageTime")));
+                listview_adapter.add(msgObject);
+
+//                results.add(msgObject);
+            }
+        }
 
         chatSend.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,12 +112,23 @@ public class Chat_Activity extends ActionBarActivity {
                 //get data from edit text and populate listview
                 if(!chatText.getText().toString().isEmpty()){
                     //add text to message object and call adapter
+
                     messages=new Messages(chatText.getText().toString());
+                    messages.setMessageFrom(utils.getPref(Configs.userPref));
+                    messages.setMessageTo(phone);
+                    messages.setMessageTime(currentTime());
                     Log.i("message object", "" + messages);
                     listview_adapter.add(messages);
                     Log.i("list adapter", "" + listview_adapter);
-                    sendMessage(regId,chatText.getText().toString());
+                    sendMessage(regId, chatText.getText().toString());
+
+                    //save in db
+                    Boolean msgSave = dbHandler.saveMessage(messages);
+                    if (msgSave){
+                        Toast.makeText(getApplicationContext(),"Message Saved",Toast.LENGTH_SHORT).show();
+                    }
 //                    message_adapter.notifyDataSetChanged();
+                    chatText.setText("");
                 }else {
                     Toast.makeText(getApplicationContext(),"No text",Toast.LENGTH_SHORT).show();
                 }
@@ -82,7 +138,9 @@ public class Chat_Activity extends ActionBarActivity {
 
     private String sendMessage(final String to, String message){
         final String too = to;
-        final String sender = "~0703435435~";
+//        final String sender = "~0703435435~";
+        Utils utils = new Utils(getApplicationContext());
+        final String sender = utils.getPref(Configs.userPref)+"~";
         final String msg = sender.concat(message);
         new AsyncTask<Void,Void,String>(){
 
@@ -142,6 +200,11 @@ public class Chat_Activity extends ActionBarActivity {
         return null;
     }
 
+    public String currentTime(){
+        //return current timestamp
+        return new Date().toString();
+    }
+
     public BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -152,8 +215,13 @@ public class Chat_Activity extends ActionBarActivity {
             if (bundle != null) {
                 String msg =bundle.getString(Configs.chatText);
                 Log.d(DEBUG_TAG,"Received message "+msg);
-                messages = new Messages(msg);
+                String[] from = msg.split("~");
+                messages = new Messages(from[1]);
+                messages.setMessageFrom(from[0]);
+                messages.setMessageTo(utils.getPref(Configs.userPref));
+                messages.setMessageTime(currentTime());
                 listview_adapter.add(messages);
+                dbHandler.saveMessage(messages);
             } else {
                 Toast.makeText(getApplicationContext(), "No Data received", Toast.LENGTH_SHORT).show();
             }

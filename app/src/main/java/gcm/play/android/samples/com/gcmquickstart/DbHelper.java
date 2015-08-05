@@ -21,6 +21,14 @@ public class DbHelper extends SQLiteOpenHelper {
     static final String KEY_TITLE = "DbAdapter";
     static final String KEY_REG = "regId";
 
+    //Table Columns for messages table
+    static final String MSG_TABLE = "messages";
+    public static final String MSG_ID = "id";
+    static final String MSG_TO = "messageTo";
+    static final String MSG_FROM = "messageFrom";
+    static final String MSG_TEXT = "messageText";
+    static final String MSG_TIME = "messageTime";
+
     final String DEBUG_TAG = this.getClass().getSimpleName();
 
     //Database creation string
@@ -31,6 +39,15 @@ public class DbHelper extends SQLiteOpenHelper {
             + KEY_REG + " text not null"
             + ")";
 
+    static final String MESSAGES_TABLE =
+            "create table " + MSG_TABLE + " ("
+                    + MSG_ID + " integer primary key autoincrement,"
+                    + MSG_TO + " text not null,"
+                    + MSG_FROM + " text not null,"
+                    + MSG_TEXT + " text not null,"
+                    + MSG_TIME + " text not null"
+                    + ")";
+
 
     public DbHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -40,6 +57,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
 
         sqLiteDatabase.execSQL(DATABASE_CREATE);
+        sqLiteDatabase.execSQL(MESSAGES_TABLE);
 
     }
 

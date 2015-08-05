@@ -12,6 +12,7 @@
         android:id="@+id/etPhone"
         android:hint="phone no. 07..."
         android:layout_centerVertical="true"
+        android:background="#B0BEC5"
         android:layout_centerHorizontal="true" />
 
     <Button

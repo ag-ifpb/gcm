@@ -5,7 +5,7 @@ package gcm.play.android.samples.com.gcmquickstart;
  */
 public class Messages {
 
-    String messageId;
+    String messageTime;
     String messageFrom;
     String messageTo;
     String messageText;
@@ -22,12 +22,12 @@ public Messages(String messageText){
         this.messageText = messageText;
     }
 
-    public String getMessageId() {
-        return messageId;
+    public String getMessageTime() {
+        return messageTime;
     }
 
-    public void setMessageId(String messageId) {
-        this.messageId = messageId;
+    public void setMessageTime(String messageTime) {
+        this.messageTime = messageTime;
     }
 
     public String getMessageFrom() {

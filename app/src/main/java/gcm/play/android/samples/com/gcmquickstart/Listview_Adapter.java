@@ -2,12 +2,15 @@ package gcm.play.android.samples.com.gcmquickstart;
 
 import android.content.Context;
 import android.content.Intent;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -61,6 +64,7 @@ public class Listview_Adapter extends ArrayAdapter {
             convertView = inflater.inflate(R.layout.chat_item,null);
             mViewholder = new ViewHolder();
             mViewholder.mChat = (TextView) convertView.findViewById(R.id.tvChatItem);
+            mViewholder.rlayout = (LinearLayout) convertView.findViewById(R.id.chatLine);
             convertView.setTag(mViewholder);
 //            mViewholder.mName.setText(data.get(i));
         }else {
@@ -70,13 +74,22 @@ public class Listview_Adapter extends ArrayAdapter {
 //        mViewholder.mName.setText("ada");
 
         final Messages chatdata = getItem(position);
-        mViewholder.mChat.setText(chatdata.getMessageText());
+//        String[] from = chatdata.getMessageText().split("~");
+        Utils utils = new Utils(context);
+        if (chatdata.getMessageFrom().equalsIgnoreCase(utils.getPref(Configs.userPref))) {
+            mViewholder.rlayout.setGravity(Gravity.END);
+            mViewholder.mChat.setText(chatdata.getMessageText());
+        } else {
+            mViewholder.rlayout.setGravity(Gravity.START);
+            mViewholder.mChat.setText(chatdata.getMessageText());
+        }
 
         return convertView;
     }
 
     public static class ViewHolder {
         TextView mChat;
+        LinearLayout rlayout;
     }
 
 }
