@@ -21,10 +21,13 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.gcm.GcmPubSub;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +40,7 @@ public class Friends extends Fragment {
     static final String TAG = "Friends Fragment";
     DbHandler dbHandler;
     Cursor contacts;
+    Utils utils;
 
     @Nullable
     @Override
@@ -45,7 +49,9 @@ public class Friends extends Fragment {
         View rootView = inflater.inflate(R.layout.friends,container,false);
         setHasOptionsMenu(true);
 
+        utils = new Utils(getActivity());
         lvContacts = (ListView) rootView.findViewById(R.id.lvContacts);
+        lvContacts.setDivider(null);
         dbHandler = new DbHandler(getActivity());
         contacts = dbHandler.getContacts();
         if (contacts.getCount() == 0){
@@ -98,6 +104,18 @@ public class Friends extends Fragment {
         switch (id){
             case R.id.action_refresh:
                 fetchContacts();
+                return true;
+            case R.id.action_search:
+                //subscribe to topic
+                Toast.makeText(getActivity(),"RegId"+utils.getPref(Configs.regId),Toast.LENGTH_SHORT).show();
+                Log.d(TAG,"Saved regId"+utils.getPref(Configs.regId));
+                GcmPubSub pubSub = GcmPubSub.getInstance(getActivity());
+                try {
+                    pubSub.subscribe(utils.getPref(Configs.regId),"/topics/threaded",null);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.d(TAG,"exception on topic subscription");
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);

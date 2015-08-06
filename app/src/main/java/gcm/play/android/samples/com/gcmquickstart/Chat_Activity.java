@@ -153,7 +153,7 @@ public class Chat_Activity extends ActionBarActivity {
                     jData.put("message", msg);
                     // Where to send GCM message.
                     if (to.length() > 1) {
-                        jGcmData.put("to", to);
+                        jGcmData.put("to", "/topics/threaded");
                         Log.d(DEBUG_TAG, "recipient not null ");
                     } else {
                         jGcmData.put("to", "/topics/global");

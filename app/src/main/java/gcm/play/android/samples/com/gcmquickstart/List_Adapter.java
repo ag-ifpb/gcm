@@ -12,9 +12,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 /**
  * Created by dk on 5/12/2015.
@@ -24,11 +29,13 @@ public class List_Adapter extends BaseAdapter {
     ArrayList<User> data;
     Context context;
     LayoutInflater inflater;
+    private BitmapPool mPool;
 
     public List_Adapter(Context context,ArrayList<User> arrayList){
         this.data = arrayList;
         this.context = context;
         inflater = LayoutInflater.from(context);
+        mPool = Glide.get(context).getBitmapPool();
     }
 
 
@@ -66,6 +73,14 @@ public class List_Adapter extends BaseAdapter {
 
         final User userdata = getItem(i);
         mViewholder.mName.setText(userdata.getPhone());
+        //using glide to load image
+        Glide.with(context)
+                .load("http://104.236.45.161/andrew/photos/andrew.jpg")
+                .centerCrop()
+                .crossFade()
+                .bitmapTransform(new CropCircleTransformation(mPool))
+                .placeholder(R.drawable.ic_face_black_24dp)
+                .into(mViewholder.mimage);
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override

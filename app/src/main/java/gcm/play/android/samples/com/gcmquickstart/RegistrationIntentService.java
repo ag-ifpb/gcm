@@ -84,6 +84,9 @@ public class RegistrationIntentService extends IntentService {
                 // otherwise your server should have already received the token.
                 sharedPreferences.edit().putBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, true).apply();
                 sharedPreferences.edit().putString(Configs.userPref, userNumber).apply();
+
+                Utils utils = new Utils(getApplicationContext());
+                utils.savePref(Configs.regId,token);
                 // [END register_for_gcm]
             }
         } catch (Exception e) {

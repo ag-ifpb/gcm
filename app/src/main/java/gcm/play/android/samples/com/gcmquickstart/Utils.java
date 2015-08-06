@@ -21,4 +21,10 @@ public class Utils {
         return mSharePreferences.getString(prefName,"none");
     }
 
+    public void savePref(String prefName,String prefValue){
+        mSharePreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+//        final SharedPreferences.Editor editor = mSharePreferences.edit().putString(prefName,prefValue);
+        mSharePreferences.edit().putString(prefName,prefValue).apply();
+    }
+
 }
