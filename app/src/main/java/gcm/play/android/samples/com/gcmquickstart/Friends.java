@@ -106,7 +106,7 @@ public class Friends extends Fragment {
                 fetchContacts();
                 return true;
             case R.id.action_search:
-                //subscribe to topic
+                /*//subscribe to topic
                 Toast.makeText(getActivity(),"RegId"+utils.getPref(Configs.regId),Toast.LENGTH_SHORT).show();
                 Log.d(TAG,"Saved regId"+utils.getPref(Configs.regId));
                 GcmPubSub pubSub = GcmPubSub.getInstance(getActivity());
@@ -115,7 +115,9 @@ public class Friends extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                     Log.d(TAG,"exception on topic subscription");
-                }
+                }*/
+                Intent profile = new Intent(getActivity(),Profile_Settings.class);
+                startActivity(profile);
                 return true;
         }
         return super.onOptionsItemSelected(item);

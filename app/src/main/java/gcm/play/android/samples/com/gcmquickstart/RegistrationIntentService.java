@@ -87,6 +87,8 @@ public class RegistrationIntentService extends IntentService {
 
                 Utils utils = new Utils(getApplicationContext());
                 utils.savePref(Configs.regId,token);
+                utils.savePref(Configs.phone,userNumber);
+                utils.savePref(Configs.notificationNumber,"1");
                 // [END register_for_gcm]
             }
         } catch (Exception e) {

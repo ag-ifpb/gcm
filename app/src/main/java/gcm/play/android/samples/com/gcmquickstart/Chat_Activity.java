@@ -153,7 +153,7 @@ public class Chat_Activity extends ActionBarActivity {
                     jData.put("message", msg);
                     // Where to send GCM message.
                     if (to.length() > 1) {
-                        jGcmData.put("to", "/topics/threaded");
+                        jGcmData.put("to", to);
                         Log.d(DEBUG_TAG, "recipient not null ");
                     } else {
                         jGcmData.put("to", "/topics/global");
@@ -221,7 +221,7 @@ public class Chat_Activity extends ActionBarActivity {
                 messages.setMessageTo(utils.getPref(Configs.userPref));
                 messages.setMessageTime(currentTime());
                 listview_adapter.add(messages);
-                dbHandler.saveMessage(messages);
+//                dbHandler.saveMessage(messages);
             } else {
                 Toast.makeText(getApplicationContext(), "No Data received", Toast.LENGTH_SHORT).show();
             }

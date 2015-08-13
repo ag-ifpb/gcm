@@ -11,6 +11,8 @@ public class Configs {
     public static final String userPref = "userNumber";
     public static final String login_false = "not logged in";
     public static final String usersURL = "http://104.236.45.161/andrew/returnUsers.php";
+    public static final String userPic = "userPic";
+    public static final String picURL = "http://104.236.45.161/andrew/profilePic.php";
 
     public static final String phone = "phone";
     public static final String regId = "regId";
@@ -20,4 +22,5 @@ public class Configs {
     public static final String recipient = "to";
     public static final String sender = "from";
     public static final String chatText = "chatText";
+    public static final String notificationNumber = "notificationNumber";
 }
